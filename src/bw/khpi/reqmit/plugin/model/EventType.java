@@ -7,28 +7,28 @@ public enum EventType {
 			return "open";
 		}
 	},
-	ACTIVATE {
+	VISIBLE {
 		@Override
 		public String toString(){
-			return "activate";
+			return "visible";
 		}
 	},
-	DEACTIVATE {
+	HIDDEN {
 		@Override
 		public String toString(){
-			return "deactivate";
-		}
-	},
-	EDIT {
-		@Override
-		public String toString(){
-			return "edit";
+			return "hidden";
 		}
 	},
 	CLOSE {
 		@Override
 		public String toString(){
 			return "close";
+		}
+	},
+	EDIT {
+		@Override
+		public String toString(){
+			return "edit";
 		}
 	},
 	CREATE {
