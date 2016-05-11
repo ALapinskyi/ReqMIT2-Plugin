@@ -14,12 +14,14 @@ import bw.khpi.reqmit.plugin.model.EventType;
 import bw.khpi.reqmit.plugin.model.UnitMap;
 import bw.khpi.reqmit.plugin.model.UnitStructure;
 import bw.khpi.reqmit.plugin.model.WorkspaceUnit;
+import bw.khpi.reqmit.plugin.service.ConnectionProvider;
 import bw.khpi.reqmit.plugin.util.FormatUtils;
 import bw.khpi.reqmit.plugin.util.TimeUtils;
 
 public class ActivationListener implements IPartListener2, IWindowListener {
 	
 	private String activPath;
+	ConnectionProvider connectionProvider = new ConnectionProvider();
 
 	@Override
 	public void partOpened(IWorkbenchPartReference part) {
@@ -27,6 +29,8 @@ public class ActivationListener implements IPartListener2, IWindowListener {
 		if (workspaceUnit.getPart() != null) {
 			UnitStructure structure = new UnitStructure(workspaceUnit, new LinkedList<Event>());
 
+			connectionProvider.sendMessage(FormatUtils.eventToJson(structure.getUnit().getPath(), 
+					new Event(TimeUtils.getCurrentTime(), EventType.OPEN)));
 			if (!UnitMap.getUnits().containsKey(workspaceUnit.getPath())) {
 				UnitMap.addUnit(workspaceUnit.getPath(), structure);
 				structure = UnitMap.getUnits().get(workspaceUnit.getPath());
@@ -47,6 +51,8 @@ public class ActivationListener implements IPartListener2, IWindowListener {
 				list.remove(list.size() - 1);
 			}
 			list.add(new Event(date, EventType.CLOSE));
+			connectionProvider.sendMessage(FormatUtils.eventToJson(structure.getUnit().getPath(), 
+					new Event(TimeUtils.getCurrentTime(), EventType.CLOSE)));
 			UnitMap.removeUnit(path);
 		}
 	}
@@ -58,8 +64,12 @@ public class ActivationListener implements IPartListener2, IWindowListener {
 			UnitStructure structure = UnitMap.getUnits().get(path);
 			List<Event> list = structure.getEvents();
 			if (list.get(list.size() - 1).getEventType() != EventType.OPEN
-					&& list.get(list.size() - 1).getEventType() != EventType.VISIBLE)
+					&& list.get(list.size() - 1).getEventType() != EventType.VISIBLE){
 				list.add(new Event(TimeUtils.getCurrentTime(), EventType.VISIBLE));
+				connectionProvider.sendMessage(FormatUtils.eventToJson(structure.getUnit().getPath(), 
+						new Event(TimeUtils.getCurrentTime(), EventType.VISIBLE)));
+			}
+			
 		} else {
 			partOpened(part);
 		}
@@ -72,8 +82,11 @@ public class ActivationListener implements IPartListener2, IWindowListener {
 		if (UnitMap.getUnits().containsKey(path)) {
 			UnitStructure structure = UnitMap.getUnits().get(path);
 			List<Event> list = structure.getEvents();
-			if (list.get(list.size() - 1).getEventType() != EventType.HIDDEN)
+			if (list.get(list.size() - 1).getEventType() != EventType.HIDDEN){
 				list.add(new Event(TimeUtils.getCurrentTime(), EventType.HIDDEN));
+				connectionProvider.sendMessage(FormatUtils.eventToJson(structure.getUnit().getPath(), 
+						new Event(TimeUtils.getCurrentTime(), EventType.HIDDEN)));
+			}
 		}
 
 	}
@@ -83,6 +96,8 @@ public class ActivationListener implements IPartListener2, IWindowListener {
 		UnitMap.getUnits().forEach((k,v) -> {
 			if(k.equals(activPath)){
 				v.getEvents().add(new Event(TimeUtils.getCurrentTime(), EventType.VISIBLE));
+				connectionProvider.sendMessage(FormatUtils.eventToJson(v.getUnit().getPath(), 
+						new Event(TimeUtils.getCurrentTime(), EventType.VISIBLE)));
 			}
 		});
 	}
@@ -93,6 +108,8 @@ public class ActivationListener implements IPartListener2, IWindowListener {
 			List<Event> event = v.getEvents();
 			if(event.get(event.size() - 1).getEventType() != EventType.HIDDEN){
 				event.add(new Event(TimeUtils.getCurrentTime(), EventType.HIDDEN));
+				connectionProvider.sendMessage(FormatUtils.eventToJson(v.getUnit().getPath(), 
+						new Event(TimeUtils.getCurrentTime(), EventType.HIDDEN)));
 				activPath = k;
 			}
 		});
