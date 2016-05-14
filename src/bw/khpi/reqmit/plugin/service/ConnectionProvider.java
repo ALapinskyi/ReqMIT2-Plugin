@@ -2,26 +2,35 @@ package bw.khpi.reqmit.plugin.service;
 
 public class ConnectionProvider {
 
-	private static SenderService senderService = new SenderService();
+	private static SenderService senderService;
 	private static ListenerService listenerService;
 	
-	public ConnectionProvider(SenderService senderService, ListenerService listenerService){
-		this.senderService = senderService;
-		//this.listenerService = listenerService;
-		//this.listenerService.run();
-	}
-	
-	public ConnectionProvider(){
+	private ConnectionProvider(){
 		
 	}
 	
-	public AbstractService getSender(){
+	public static void setSenderService(SenderService senderService) {
+		ConnectionProvider.senderService = senderService;
+	}
+
+
+
+	public static void setListenerService(ListenerService listenerService) {
+		ConnectionProvider.listenerService = listenerService;
+	}
+
+
+
+	public static AbstractService getListener(){
+		return listenerService;
+	}
+	
+	public static AbstractService getSender(){
 		return senderService;
 	}
 
-	public void sendMessage(String message){
+	public static void sendMessage(String message){
 		 senderService.sendMessage(message);
 	}
-	
 	
 }

@@ -12,28 +12,26 @@ import bw.khpi.reqmit.plugin.util.TimeUtils;
 
 class DeltaVisitor implements IResourceDeltaVisitor {
 
-	ConnectionProvider connectionProvider = new ConnectionProvider();
-
 	@Override
 	public boolean visit(IResourceDelta delta) {
 		IResource res = delta.getResource();
 		switch (delta.getKind()) {
 		case IResourceDelta.ADDED: {
 			//System.out.print(res.getFullPath());
-			connectionProvider.sendMessage(FormatUtils.eventToJson(res.getFullPath().toString(), 
+			ConnectionProvider.sendMessage(FormatUtils.eventToJson(res.getFullPath().toString(), 
 					new Event(TimeUtils.getCurrentTime(), EventType.CREATE)));
 			break;
 		}
 		case IResourceDelta.REMOVED: {
 			//System.out.print(res.getFullPath());
-			connectionProvider.sendMessage(FormatUtils.eventToJson(res.getFullPath().toString(), 
+			ConnectionProvider.sendMessage(FormatUtils.eventToJson(res.getFullPath().toString(), 
 					new Event(TimeUtils.getCurrentTime(), EventType.REMOVE)));
 			break;
 		}
 		case IResourceDelta.CHANGED: {
 			// IMarkerDelta[] markerDelta = delta.getMarkerDeltas();
 			//System.out.print(res.getFullPath());
-			connectionProvider.sendMessage(FormatUtils.eventToJson(res.getFullPath().toString(), 
+			ConnectionProvider.sendMessage(FormatUtils.eventToJson(res.getFullPath().toString(), 
 					new Event(TimeUtils.getCurrentTime(), EventType.EDIT)));
 			break;
 		}

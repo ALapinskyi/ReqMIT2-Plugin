@@ -12,17 +12,7 @@ public abstract class AbstractService{
 	public ObjectOutputStream out;
 	public ObjectInputStream in;
 	protected String message;
-	
-	public AbstractService(){
-		try {
-			requestSocket = new Socket("localhost", 2004);
-		} catch(UnknownHostException unknownHost){
-            System.err.println("You are trying to connect to an unknown host!");
-        }
-		catch (IOException ioException) {
-			ioException.printStackTrace();;
-		}
-	}
+	protected Thread thread;
 	
 	public void closeConnection(){
 		try{
