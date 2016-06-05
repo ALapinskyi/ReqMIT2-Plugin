@@ -28,11 +28,11 @@ public class ActivationListener implements IPartListener2, IWindowListener {
 		if (workspaceUnit.getPart() != null) {
 			UnitStructure structure = new UnitStructure(workspaceUnit, new LinkedList<Event>());
 
-			ConnectionProvider.sendMessage(FormatUtils.eventToJson(structure.getUnit().getPath(), 
+			ConnectionProvider.sendMessage(FormatUtils.eventToJson(FormatUtils.convertPath(structure.getUnit().getPath()), 
 					new Event(TimeUtils.getCurrentTime(), EventType.OPEN)));
 			if (!UnitMap.getUnits().containsKey(workspaceUnit.getPath())) {
-				UnitMap.addUnit(workspaceUnit.getPath(), structure);
-				structure = UnitMap.getUnits().get(workspaceUnit.getPath());
+				UnitMap.addUnit(FormatUtils.convertPath(structure.getUnit().getPath()), structure);
+				structure = UnitMap.getUnits().get(FormatUtils.convertPath(structure.getUnit().getPath()));
 				List<Event> list = structure.getEvents();
 				list.add(new Event(TimeUtils.getCurrentTime(), EventType.OPEN));
 			}
@@ -41,11 +41,11 @@ public class ActivationListener implements IPartListener2, IWindowListener {
 
 	@Override
 	public void partClosed(IWorkbenchPartReference part) {
-		String path = FormatUtils.convertPath(part.getPart(true).getTitleToolTip());
+		String path = "/" + FormatUtils.convertPath(part.getPart(true).getTitleToolTip());
 		if (UnitMap.getUnits().containsKey(path)) {
 			UnitStructure structure = UnitMap.getUnits().get(path);
 			List<Event> list = structure.getEvents();
-			Date date = TimeUtils.getCurrentTime();
+			long date = TimeUtils.getCurrentTime();
 			if (list.get(list.size() - 1).getEventTime().compareTo(date) == 0) {
 				list.remove(list.size() - 1);
 			}
@@ -58,7 +58,7 @@ public class ActivationListener implements IPartListener2, IWindowListener {
 
 	@Override
 	public void partVisible(IWorkbenchPartReference part) {
-		String path = FormatUtils.convertPath(part.getPart(true).getTitleToolTip());
+		String path = "/" + FormatUtils.convertPath(part.getPart(true).getTitleToolTip());
 		if (UnitMap.getUnits().containsKey(path)) {
 			UnitStructure structure = UnitMap.getUnits().get(path);
 			List<Event> list = structure.getEvents();
@@ -77,7 +77,7 @@ public class ActivationListener implements IPartListener2, IWindowListener {
 
 	@Override
 	public void partHidden(IWorkbenchPartReference part) {
-		String path = FormatUtils.convertPath(part.getPart(true).getTitleToolTip());
+		String path = "/" + FormatUtils.convertPath(part.getPart(true).getTitleToolTip());
 		if (UnitMap.getUnits().containsKey(path)) {
 			UnitStructure structure = UnitMap.getUnits().get(path);
 			List<Event> list = structure.getEvents();

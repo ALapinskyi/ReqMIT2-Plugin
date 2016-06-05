@@ -5,18 +5,18 @@ import java.util.Date;
 
 public class Event {
 	
-	private Date eventTime;
+	private Long eventTime;
 	private EventType eventType;
 	
-	public Event(Date eventTime, EventType eventType) {
+	public Event(Long eventTime, EventType eventType) {
 		super();
 		this.eventTime = eventTime;
 		this.eventType = eventType;
 	}
-	public Date getEventTime() {
+	public Long getEventTime() {
 		return eventTime;
 	}
-	public void setEventTime(Date eventTime) {
+	public void setEventTime(Long eventTime) {
 		this.eventTime = eventTime;
 	}
 	public EventType getEventType() {

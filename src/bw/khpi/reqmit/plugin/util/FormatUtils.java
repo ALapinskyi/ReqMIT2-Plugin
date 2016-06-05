@@ -7,16 +7,17 @@ public class FormatUtils {
 	
 	public static String convertPath(String oldString){
 		String newString = "";
-		newString = "\\" + oldString.replace("/", "\\");
+		newString = oldString.replaceAll("\\\\", "\\\\\\\\");
+		newString = oldString.replace("\\", "/");
 		return newString;
 	}
 	
 	public static String eventToJson(String path, Event event){
 		String json = "";
 		
-		json += "{\"file\":" + path;
-		json += ",\"event\":" + event.getEventType();
-		json += ",\"time\":" + event.getEventTime();
+		json += "{\"fileName\":\"" + convertPath(path) + "\"";
+		json += ",\"eventType\":\"" + event.getEventType() + "\"";
+		json += ",\"data\":\"" + event.getEventTime();
 		json += "\"}";
 		
 		return json;

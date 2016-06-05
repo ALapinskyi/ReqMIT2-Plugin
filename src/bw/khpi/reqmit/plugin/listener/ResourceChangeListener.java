@@ -19,13 +19,26 @@ public class ResourceChangeListener implements IResourceChangeListener {
 	public void resourceChanged(IResourceChangeEvent event) {
 		deltas = new LinkedList<>();
 		getModifiedDeltas(event.getDelta());
-		for (IResourceDelta d : deltas) {
-			try {
-				d.accept(new DeltaVisitor());
-			} catch (CoreException e) {
-				e.printStackTrace();
-			}
-		}
+		switch (event.getType()) {
+        case IResourceChangeEvent.PRE_CLOSE:
+           break;
+        case IResourceChangeEvent.PRE_DELETE:
+           break;
+        case IResourceChangeEvent.POST_CHANGE:
+        	for (IResourceDelta d : deltas) {
+    			try {
+    				d.accept(new DeltaVisitor());
+    			} catch (CoreException e) {
+    				e.printStackTrace();
+    			}
+    		}
+           break;
+        case IResourceChangeEvent.PRE_BUILD:
+           break;
+        case IResourceChangeEvent.POST_BUILD:
+           break;
+     }
+		
 
 	}
 

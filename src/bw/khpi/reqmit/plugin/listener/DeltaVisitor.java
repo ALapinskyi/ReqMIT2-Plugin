@@ -12,26 +12,38 @@ import bw.khpi.reqmit.plugin.util.TimeUtils;
 
 class DeltaVisitor implements IResourceDeltaVisitor {
 
+	private static int lastEvent;
+
 	@Override
 	public boolean visit(IResourceDelta delta) {
 		IResource res = delta.getResource();
 		switch (delta.getKind()) {
 		case IResourceDelta.ADDED: {
-			//System.out.print(res.getFullPath());
-			ConnectionProvider.sendMessage(FormatUtils.eventToJson(res.getFullPath().toString(), 
-					new Event(TimeUtils.getCurrentTime(), EventType.CREATE)));
+			if (lastEvent == IResourceDelta.REMOVED) {
+				ConnectionProvider.sendMessage(FormatUtils.eventToJson(FormatUtils.convertPath(res.getFullPath().toString()),
+						new Event(TimeUtils.getCurrentTime(), EventType.RENAME)));
+				lastEvent = 0;
+			} else {
+				ConnectionProvider.sendMessage(FormatUtils.eventToJson(FormatUtils.convertPath(res.getFullPath().toString()),
+						new Event(TimeUtils.getCurrentTime(), EventType.CREATE)));
+				lastEvent = IResourceDelta.ADDED;
+			}
 			break;
 		}
 		case IResourceDelta.REMOVED: {
-			//System.out.print(res.getFullPath());
-			ConnectionProvider.sendMessage(FormatUtils.eventToJson(res.getFullPath().toString(), 
-					new Event(TimeUtils.getCurrentTime(), EventType.REMOVE)));
+			if (lastEvent == IResourceDelta.ADDED) {
+				ConnectionProvider.sendMessage(FormatUtils.eventToJson(FormatUtils.convertPath(res.getFullPath().toString()),
+						new Event(TimeUtils.getCurrentTime(), EventType.REPLACE)));
+				lastEvent = 0;
+			} else {
+				ConnectionProvider.sendMessage(FormatUtils.eventToJson(FormatUtils.convertPath(res.getFullPath().toString()),
+						new Event(TimeUtils.getCurrentTime(), EventType.REMOVE)));
+				lastEvent = IResourceDelta.REMOVED;
+			}
 			break;
 		}
 		case IResourceDelta.CHANGED: {
-			// IMarkerDelta[] markerDelta = delta.getMarkerDeltas();
-			//System.out.print(res.getFullPath());
-			ConnectionProvider.sendMessage(FormatUtils.eventToJson(res.getFullPath().toString(), 
+			ConnectionProvider.sendMessage(FormatUtils.eventToJson(FormatUtils.convertPath(res.getFullPath().toString()),
 					new Event(TimeUtils.getCurrentTime(), EventType.EDIT)));
 			break;
 		}
